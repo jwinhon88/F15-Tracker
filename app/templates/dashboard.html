@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Active Funds</h1>
+<div class="grid">
+  {% for card in cards %}
+  <article class="card">
+    <h2>{{ card.fund.name }}</h2>
+    <p><strong>CIK:</strong> {{ card.fund.cik }}</p>
+    <p><strong>Latest filed:</strong> {{ card.latest_filed_at or "-" }}</p>
+    <p><strong>Latest period:</strong> {{ card.latest_report_period or "-" }}</p>
+    <a class="btn" href="/funds/{{ card.fund.id }}">View details</a>
+  </article>
+  {% else %}
+  <p>No active funds.</p>
+  {% endfor %}
+</div>
+{% endblock %}

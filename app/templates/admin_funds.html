@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Admin · Funds</h1>
+{% if message %}<p class="flash">{{ message }}</p>{% endif %}
+<section class="card">
+  <h2>Add fund</h2>
+  <form method="post" action="/admin/funds" class="stack">
+    <input name="name" placeholder="Fund name" required />
+    <input name="cik" placeholder="10-digit CIK" required />
+    <label><input type="checkbox" name="active" checked /> Active</label>
+    <button class="btn" type="submit">Add</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Run ingestion</h2>
+  <form method="post" action="/admin/update-now">
+    <button class="btn" type="submit">Update now</button>
+  </form>
+</section>
+
+<section>
+  <h2>All funds</h2>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Name</th><th>CIK</th><th>Active</th><th>Actions</th></tr>
+    {% for f in funds %}
+    <tr>
+      <td>{{ f.name }}</td>
+      <td>{{ f.cik }}</td>
+      <td>{{ "Yes" if f.active else "No" }}</td>
+      <td>
+        <form method="post" action="/admin/funds/{{ f.id }}/toggle" style="display:inline"><button type="submit">Toggle</button></form>
+        <form method="post" action="/admin/funds/{{ f.id }}/delete" style="display:inline" onsubmit="return confirm('Delete fund?')"><button type="submit">Delete</button></form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+</section>
+{% endblock %}
