@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ fund.name }}</h1>
+<p><strong>CIK:</strong> {{ fund.cik }}</p>
+
+<form method="get" action="/funds/{{ fund.id }}" class="period-picker">
+  <label for="period">Report period</label>
+  <select id="period" onchange="window.location='/funds/{{ fund.id }}/period/' + this.value">
+    {% for p in periods %}
+      <option value="{{ p }}" {% if p == selected_period %}selected{% endif %}>{{ p }}</option>
+    {% endfor %}
+  </select>
+</form>
+
+{% if filing %}
+<section>
+  <h2>Top Holdings ({{ selected_period }})</h2>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Issuer</th><th>CUSIP</th><th>Value ($000)</th><th>Shares</th></tr>
+    {% for h in top_holdings %}
+    <tr>
+      <td>{{ h.issuer }}</td><td>{{ h.cusip }}</td><td>{{ h.value_usd_000 or 0 }}</td><td>{{ h.shares or 0 }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>QoQ Summary {% if diff.prior_period %}(vs {{ diff.prior_period }}){% endif %}</h2>
+  <p>
+    NEW {{ counts.NEW or 0 }} · ADD {{ counts.ADD or 0 }} · TRIM {{ counts.TRIM or 0 }} · SOLD {{ counts.SOLD or 0 }}
+  </p>
+  <div class="table-wrap">
+  <table>
+    <tr>
+      <th>Status</th><th>Issuer</th><th>CUSIP</th><th>Δ Shares</th><th>Δ Value ($000)</th><th>Current</th><th>Prior</th>
+    </tr>
+    {% for r in diff.rows %}
+    <tr class="status-{{ r.status|lower }}">
+      <td>{{ r.status }}</td>
+      <td>{{ r.issuer }}</td>
+      <td>{{ r.cusip }}</td>
+      <td>{{ r.delta_shares }}</td>
+      <td>{{ r.delta_value_usd_000 }}</td>
+      <td>{{ r.value_usd_000 }}</td>
+      <td>{{ r.prev_value_usd_000 }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+</section>
+{% else %}
+<p>No filings available yet.</p>
+{% endif %}
+{% endblock %}

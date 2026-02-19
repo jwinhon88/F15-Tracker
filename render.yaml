@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: thirteen-f-tracker
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///./tracker.db
+      - key: SEC_USER_AGENT
+        sync: false
+      - key: ADMIN_USER
+        sync: false
+      - key: ADMIN_PASS
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        sync: false
+  - type: cron
+    name: thirteen-f-tracker-update
+    env: python
+    schedule: "*/30 * * * *"
+    buildCommand: pip install -r requirements.txt
+    startCommand: python scripts/update.py
